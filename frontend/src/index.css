@@ -1,0 +1,222 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #f4f7fb;
+  color: #1f2937;
+}
+
+.app-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+header p {
+  margin: 8px 0 0;
+  color: #4b5563;
+}
+
+.form-card,
+.items-card,
+.qr-card,
+.barcode-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  margin-bottom: 16px;
+}
+
+label input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+button {
+  appearance: none;
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.items-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.items-card li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.items-card li:last-child {
+  border-bottom: none;
+}
+
+.items-card strong {
+  display: block;
+}
+
+.items-card span {
+  display: block;
+  color: #475569;
+}
+
+.qr-card img {
+  display: block;
+  max-width: 240px;
+  margin-top: 16px;
+}
+
+.barcode-card img {
+  display: block;
+  max-width: 320px;
+  margin-top: 16px;
+}
+
+.items-card li > div + button {
+  margin-left: 8px;
+}
+
+button.secondary-action {
+  background: #64748b;
+  margin-left: 8px;
+}
+
+button.secondary-action:hover {
+  background: #475569;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+}
+
+.modal-content p {
+  margin: 8px 0;
+  color: #4b5563;
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.modal-content label input[type="number"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  margin-top: 8px;
+  font-size: 1rem;
+}
+
+.modal-content label input[type="number"]:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.modal-error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modal-actions button.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.modal-actions button.primary:hover {
+  background: #1d4ed8;
+}
+
+.modal-actions button.secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.modal-actions button.secondary:hover {
+  background: #e5e7eb;
+}
