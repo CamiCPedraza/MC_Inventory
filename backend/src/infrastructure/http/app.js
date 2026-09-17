@@ -1,24 +1,77 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const InMemoryItemRepository = require("../repositories/InMemoryItemRepository");
+const InMemoryUserRepository = require("../repositories/InMemoryUserRepository");
 const QRCodeAdapter = require("../adapters/QRCodeAdapter");
 const BarcodeAdapter = require("../adapters/BarcodeAdapter");
+const BcryptPasswordHasher = require("../adapters/BcryptPasswordHasher");
+const JwtTokenService = require("../adapters/JwtTokenService");
 const RegisterItemUseCase = require("../../application/RegisterItemUseCase");
 const GenerateItemQrCodeUseCase = require("../../application/GenerateItemQrCodeUseCase");
 const GenerateItemBarcodeUseCase = require("../../application/GenerateItemBarcodeUseCase");
+const RegisterUserUseCase = require("../../application/RegisterUserUseCase");
+const LoginUseCase = require("../../application/LoginUseCase");
+const User = require("../../domain/User");
+const authenticate = require("./middleware/authenticate");
+const authorize = require("./middleware/authorize");
 
 const app = express();
 app.use(express.json());
 
 const itemRepository = new InMemoryItemRepository();
+const userRepository = new InMemoryUserRepository();
 const qrCodeGenerator = new QRCodeAdapter();
 const barcodeGenerator = new BarcodeAdapter();
+const passwordHasher = new BcryptPasswordHasher();
+
+const jwtSecret = process.env.JWT_SECRET || "dev-only-insecure-secret";
+if (!process.env.JWT_SECRET) {
+  console.warn("[WARN] JWT_SECRET not set. Using an insecure default; set JWT_SECRET in production.");
+}
+const tokenService = new JwtTokenService(jwtSecret);
 
 const registerItemUseCase = new RegisterItemUseCase(itemRepository);
 const generateItemQrCodeUseCase = new GenerateItemQrCodeUseCase(itemRepository, qrCodeGenerator);
 const generateItemBarcodeUseCase = new GenerateItemBarcodeUseCase(itemRepository, barcodeGenerator);
+const registerUserUseCase = new RegisterUserUseCase(userRepository, passwordHasher);
+const loginUseCase = new LoginUseCase(userRepository, passwordHasher, tokenService);
+
+const defaultAdminUsername = process.env.ADMIN_USERNAME || "admin";
+const defaultAdminPassword = process.env.ADMIN_PASSWORD || "admin123";
+if (!process.env.ADMIN_PASSWORD) {
+  console.warn("[WARN] ADMIN_PASSWORD not set. Using an insecure default admin password; set it in production.");
+}
+userRepository.save(
+  new User({
+    id: "seed-admin",
+    username: defaultAdminUsername,
+    passwordHash: bcrypt.hashSync(defaultAdminPassword, 10),
+    role: "admin"
+  })
+);
+
+const requireAdmin = [authenticate(tokenService), authorize("admin")];
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
+});
+
+app.post("/auth/login", async (req, res) => {
+  try {
+    const result = await loginUseCase.execute(req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(401).json({ error: error.message });
+  }
+});
+
+app.post("/auth/register", ...requireAdmin, async (req, res) => {
+  try {
+    const result = await registerUserUseCase.execute(req.body);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 app.get("/inventory/items/:id/qr/view", (req, res) => {
@@ -65,11 +118,11 @@ app.get("/inventory/items/:id/qr/view", (req, res) => {
 </html>`);
 });
 
-app.get("/inventory/items", (req, res) => {
+app.get("/inventory/items", ...requireAdmin, (req, res) => {
   res.json(itemRepository.findAll());
 });
 
-app.post("/inventory/items", (req, res) => {
+app.post("/inventory/items", ...requireAdmin, (req, res) => {
   try {
     const item = registerItemUseCase.execute(req.body);
     res.status(201).json(item);
@@ -78,7 +131,7 @@ app.post("/inventory/items", (req, res) => {
   }
 });
 
-app.put('/inventory/items/:id', (req, res) => {
+app.put('/inventory/items/:id', ...requireAdmin, (req, res) => {
   try {
     const { stock } = req.body;
     if (stock === undefined) {
@@ -94,7 +147,7 @@ app.put('/inventory/items/:id', (req, res) => {
   }
 });
 
-app.get("/inventory/items/:id/qr", async (req, res) => {
+app.get("/inventory/items/:id/qr", ...requireAdmin, async (req, res) => {
   try {
     const origin = `${req.protocol}://${req.get("host")}`;
     const result = await generateItemQrCodeUseCase.execute(req.params.id, origin);
@@ -104,7 +157,7 @@ app.get("/inventory/items/:id/qr", async (req, res) => {
   }
 });
 
-app.get("/inventory/items/:id/barcode", async (req, res) => {
+app.get("/inventory/items/:id/barcode", ...requireAdmin, async (req, res) => {
   try {
     const result = await generateItemBarcodeUseCase.execute(req.params.id);
     res.json(result);
