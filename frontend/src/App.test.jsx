@@ -5,6 +5,7 @@ import * as api from "./api";
 
 describe("App UI", () => {
   beforeEach(() => {
+    localStorage.setItem("pvcm_auth_token", "test-token");
     vi.spyOn(api, "fetchItems").mockResolvedValue([]);
     vi.spyOn(api, "createItem").mockImplementation(async (item) => ({ id: "1", ...item }));
     vi.spyOn(api, "fetchItemQrCode").mockResolvedValue({
@@ -24,6 +25,7 @@ describe("App UI", () => {
   });
 
   afterEach(() => {
+    localStorage.clear();
     vi.restoreAllMocks();
   });
 

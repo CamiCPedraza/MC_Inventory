@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useItems } from "./hooks/useItems";
+import { clearStoredToken, getStoredToken, login } from "./api";
 import Header from "./components/Header";
 import ItemForm from "./components/ItemForm";
 import ItemList from "./components/ItemList";
@@ -7,9 +8,12 @@ import ErrorAlert from "./components/ErrorAlert";
 import QRDisplay from "./components/QRDisplay";
 import BarcodeDisplay from "./components/BarcodeDisplay";
 import UpdateStockModal from "./components/UpdateStockModal";
+import LoginForm from "./components/LoginForm";
 
 function App() {
   const { items, loading, error, loadItems, addItem, updateItemStock, generateQr, generateBarcode, setError } = useItems();
+  const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(getStoredToken()));
+  const [authError, setAuthError] = useState("");
   const [qrInfo, setQrInfo] = useState(null);
   const [barcodeInfo, setBarcodeInfo] = useState(null);
   const [modalState, setModalState] = useState({
@@ -20,8 +24,30 @@ function App() {
   });
 
   useEffect(() => {
-    loadItems();
-  }, [loadItems]);
+    if (isAuthenticated) {
+      loadItems();
+    }
+  }, [isAuthenticated, loadItems]);
+
+  const handleLogin = async (credentials) => {
+    setAuthError("");
+    try {
+      await login(credentials);
+      setIsAuthenticated(true);
+    } catch (err) {
+      setAuthError(err.message);
+    }
+  };
+
+  const handleLogout = () => {
+    clearStoredToken();
+    setIsAuthenticated(false);
+    setAuthError("");
+  };
+
+  if (!isAuthenticated) {
+    return <LoginForm onLogin={handleLogin} error={authError} />;
+  }
 
   const handleGenerateQr = async (itemId) => {
     setQrInfo(null);
@@ -69,7 +95,10 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Header itemCount={items.length} />
+      <div className="app-toolbar">
+        <Header itemCount={items.length} />
+        <button className="secondary-action" onClick={handleLogout}>Cerrar sesión</button>
+      </div>
 
       <ItemForm
         onItemCreated={addItem}
