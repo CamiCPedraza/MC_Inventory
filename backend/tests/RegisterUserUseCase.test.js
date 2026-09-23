@@ -52,4 +52,28 @@ describe("RegisterUserUseCase", () => {
       "Username already exists"
     );
   });
+
+  it("registers a new user with the observer role", async () => {
+    const repository = new TestUserRepository();
+    const hasher = new TestPasswordHasher();
+    const useCase = new RegisterUserUseCase(repository, hasher);
+
+    const result = await useCase.execute({
+      username: "Bodega",
+      password: "secret123",
+      role: "observer"
+    });
+
+    expect(result).toEqual({ id: expect.any(String), username: "Bodega", role: "observer" });
+  });
+
+  it("throws when the role is not valid", async () => {
+    const repository = new TestUserRepository();
+    const hasher = new TestPasswordHasher();
+    const useCase = new RegisterUserUseCase(repository, hasher);
+
+    await expect(
+      useCase.execute({ username: "Bodega", password: "secret123", role: "superadmin" })
+    ).rejects.toThrow("Invalid role");
+  });
 });

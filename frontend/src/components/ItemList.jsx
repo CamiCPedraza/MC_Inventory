@@ -1,6 +1,6 @@
 import ItemListItem from "./ItemListItem";
 
-function ItemList({ items, loading, onGenerateQr, onGenerateBarcode, onUpdateStock }) {
+function ItemList({ items, loading, onGenerateQr, onGenerateBarcode, onUpdateStock, readOnly }) {
   if (loading) {
     return (
       <section className="items-card">
@@ -30,6 +30,7 @@ function ItemList({ items, loading, onGenerateQr, onGenerateBarcode, onUpdateSto
             onGenerateQr={onGenerateQr}
             onGenerateBarcode={onGenerateBarcode}
             onUpdateStock={onUpdateStock}
+            readOnly={readOnly}
           />
         ))}
       </ul>

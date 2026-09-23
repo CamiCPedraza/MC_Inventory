@@ -51,6 +51,7 @@ userRepository.save(
 );
 
 const requireAdmin = [authenticate(tokenService), authorize("admin")];
+const requireInventoryReader = [authenticate(tokenService), authorize("admin", "observer")];
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
@@ -118,7 +119,7 @@ app.get("/inventory/items/:id/qr/view", (req, res) => {
 </html>`);
 });
 
-app.get("/inventory/items", ...requireAdmin, (req, res) => {
+app.get("/inventory/items", ...requireInventoryReader, (req, res) => {
   res.json(itemRepository.findAll());
 });
 
