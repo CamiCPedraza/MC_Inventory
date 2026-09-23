@@ -38,6 +38,40 @@ describe("App UI", () => {
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
   });
 
+  it("shows a blank inventory screen for an observer when there are no items", async () => {
+    localStorage.setItem(
+      "pvcm_auth_user",
+      JSON.stringify({ id: "2", username: "Bodega", role: "observer" })
+    );
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText(/No hay inventario registrado en este momento/i)).toBeInTheDocument()
+    );
+
+    expect(screen.queryByText(/Registrar item/i)).not.toBeInTheDocument();
+  });
+
+  it("hides create and management actions for an observer with items", async () => {
+    localStorage.setItem(
+      "pvcm_auth_user",
+      JSON.stringify({ id: "2", username: "Bodega", role: "observer" })
+    );
+    vi.spyOn(api, "fetchItems").mockResolvedValue([
+      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
+    ]);
+
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByText("Tornillo")).toBeInTheDocument());
+
+    expect(screen.queryByText(/Registrar item/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Generar QR/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Generar código de barras/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Actualizar stock/i)).not.toBeInTheDocument();
+  });
+
   it("displays loading state then empty message", async () => {
     render(<App />);
 

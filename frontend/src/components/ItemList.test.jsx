@@ -55,6 +55,24 @@ describe("ItemList", () => {
     expect(screen.getByText("Clavo")).toBeInTheDocument();
   });
 
+  it("hides action buttons when readOnly is true", () => {
+    render(
+      <ItemList
+        items={mockItems}
+        loading={false}
+        onGenerateQr={mockHandlers.onGenerateQr}
+        onGenerateBarcode={mockHandlers.onGenerateBarcode}
+        onUpdateStock={mockHandlers.onUpdateStock}
+        readOnly
+      />
+    );
+
+    expect(screen.getByText("Tornillo")).toBeInTheDocument();
+    expect(screen.queryByText("Generar QR")).not.toBeInTheDocument();
+    expect(screen.queryByText("Generar código de barras")).not.toBeInTheDocument();
+    expect(screen.queryByText("Actualizar stock")).not.toBeInTheDocument();
+  });
+
   it("calls onGenerateQr when button clicked", () => {
     render(
       <ItemList

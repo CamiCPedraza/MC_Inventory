@@ -1,6 +1,7 @@
 const API_BASE = "";
 
 const TOKEN_STORAGE_KEY = "pvcm_auth_token";
+const USER_STORAGE_KEY = "pvcm_auth_user";
 
 export function getStoredToken() {
   return localStorage.getItem(TOKEN_STORAGE_KEY);
@@ -12,6 +13,19 @@ export function storeToken(token) {
 
 export function clearStoredToken() {
   localStorage.removeItem(TOKEN_STORAGE_KEY);
+}
+
+export function getStoredUser() {
+  const raw = localStorage.getItem(USER_STORAGE_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
+
+export function storeUser(user) {
+  localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+}
+
+export function clearStoredUser() {
+  localStorage.removeItem(USER_STORAGE_KEY);
 }
 
 function authHeaders() {
@@ -32,6 +46,7 @@ export async function login(credentials) {
   }
 
   storeToken(body.token);
+  storeUser(body.user);
   return body;
 }
 

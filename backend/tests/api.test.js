@@ -160,4 +160,75 @@ describe("API routes", () => {
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty("error");
   });
+
+  it("should reject registration with an invalid role", async () => {
+    const response = await request(app)
+      .post("/auth/register")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ username: "invalidrole", password: "newpass123", role: "superadmin" });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("error");
+  });
+
+  it("should allow an admin to register an observer user and let it view the inventory", async () => {
+    const registerRes = await request(app)
+      .post("/auth/register")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ username: "Bodega", password: "bodega123", role: "observer" });
+
+    expect(registerRes.status).toBe(201);
+    expect(registerRes.body).toEqual({ id: expect.any(String), username: "Bodega", role: "observer" });
+
+    const loginRes = await request(app)
+      .post("/auth/login")
+      .send({ username: "Bodega", password: "bodega123" });
+
+    expect(loginRes.status).toBe(200);
+    const observerToken = loginRes.body.token;
+
+    const listRes = await request(app)
+      .get("/inventory/items")
+      .set("Authorization", `Bearer ${observerToken}`);
+
+    expect(listRes.status).toBe(200);
+    expect(Array.isArray(listRes.body)).toBe(true);
+  });
+
+  it("should not allow an observer to create, update, or generate codes for items", async () => {
+    const registerRes = await request(app)
+      .post("/auth/register")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ username: "Bodega2", password: "bodega123", role: "observer" });
+
+    expect(registerRes.status).toBe(201);
+
+    const loginRes = await request(app)
+      .post("/auth/login")
+      .send({ username: "Bodega2", password: "bodega123" });
+
+    const observerToken = loginRes.body.token;
+
+    const createRes = await request(app)
+      .post("/inventory/items")
+      .set("Authorization", `Bearer ${observerToken}`)
+      .send({ name: "Tornillo", sku: "TOR-999", stock: 1 });
+    expect(createRes.status).toBe(403);
+
+    const updateRes = await request(app)
+      .put("/inventory/items/any-id")
+      .set("Authorization", `Bearer ${observerToken}`)
+      .send({ stock: 5 });
+    expect(updateRes.status).toBe(403);
+
+    const qrRes = await request(app)
+      .get("/inventory/items/any-id/qr")
+      .set("Authorization", `Bearer ${observerToken}`);
+    expect(qrRes.status).toBe(403);
+
+    const barcodeRes = await request(app)
+      .get("/inventory/items/any-id/barcode")
+      .set("Authorization", `Bearer ${observerToken}`);
+    expect(barcodeRes.status).toBe(403);
+  });
 });

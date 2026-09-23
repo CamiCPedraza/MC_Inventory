@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useItems } from "./hooks/useItems";
-import { clearStoredToken, getStoredToken, login } from "./api";
+import { clearStoredToken, clearStoredUser, getStoredToken, getStoredUser, login } from "./api";
 import Header from "./components/Header";
 import ItemForm from "./components/ItemForm";
 import ItemList from "./components/ItemList";
@@ -9,10 +9,12 @@ import QRDisplay from "./components/QRDisplay";
 import BarcodeDisplay from "./components/BarcodeDisplay";
 import UpdateStockModal from "./components/UpdateStockModal";
 import LoginForm from "./components/LoginForm";
+import EmptyInventoryScreen from "./components/EmptyInventoryScreen";
 
 function App() {
   const { items, loading, error, loadItems, addItem, updateItemStock, generateQr, generateBarcode, setError } = useItems();
   const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(getStoredToken()));
+  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
   const [authError, setAuthError] = useState("");
   const [qrInfo, setQrInfo] = useState(null);
   const [barcodeInfo, setBarcodeInfo] = useState(null);
@@ -32,7 +34,8 @@ function App() {
   const handleLogin = async (credentials) => {
     setAuthError("");
     try {
-      await login(credentials);
+      const result = await login(credentials);
+      setCurrentUser(result.user);
       setIsAuthenticated(true);
     } catch (err) {
       setAuthError(err.message);
@@ -41,12 +44,20 @@ function App() {
 
   const handleLogout = () => {
     clearStoredToken();
+    clearStoredUser();
+    setCurrentUser(null);
     setIsAuthenticated(false);
     setAuthError("");
   };
 
   if (!isAuthenticated) {
     return <LoginForm onLogin={handleLogin} error={authError} />;
+  }
+
+  const isObserver = currentUser?.role === "observer";
+
+  if (isObserver && !loading && items.length === 0) {
+    return <EmptyInventoryScreen onLogout={handleLogout} />;
   }
 
   const handleGenerateQr = async (itemId) => {
@@ -100,10 +111,12 @@ function App() {
         <button className="secondary-action" onClick={handleLogout}>Cerrar sesión</button>
       </div>
 
-      <ItemForm
-        onItemCreated={addItem}
-        onError={setError}
-      />
+      {!isObserver && (
+        <ItemForm
+          onItemCreated={addItem}
+          onError={setError}
+        />
+      )}
 
       <ErrorAlert message={error} />
 
@@ -113,6 +126,7 @@ function App() {
         onGenerateQr={handleGenerateQr}
         onGenerateBarcode={handleGenerateBarcode}
         onUpdateStock={handleUpdateStock}
+        readOnly={isObserver}
       />
 
       <QRDisplay qrInfo={qrInfo} />
