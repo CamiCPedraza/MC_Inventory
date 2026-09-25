@@ -130,7 +130,13 @@ describe("API routes", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("token");
-    expect(response.body.user).toEqual({ id: "seed-admin", username: "admin", role: "admin" });
+    expect(response.body.user).toEqual({
+      id: "seed-admin",
+      username: "admin",
+      role: "admin",
+      name: "Administrador",
+      active: true
+    });
   });
 
   it("should reject login with invalid credentials", async () => {
@@ -149,7 +155,13 @@ describe("API routes", () => {
       .send({ username: "newadmin", password: "newpass123" });
 
     expect(response.status).toBe(201);
-    expect(response.body).toEqual({ id: expect.any(String), username: "newadmin", role: "admin" });
+    expect(response.body).toEqual({
+      id: expect.any(String),
+      username: "newadmin",
+      role: "admin",
+      name: "newadmin",
+      active: true
+    });
   });
 
   it("should reject registration without a valid token", async () => {
@@ -175,10 +187,22 @@ describe("API routes", () => {
     const registerRes = await request(app)
       .post("/auth/register")
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ username: "Bodega", password: "bodega123", role: "observer" });
+      .send({
+        username: "Bodega",
+        password: "bodega123",
+        role: "observer",
+        name: "Bodega",
+        active: true
+      });
 
     expect(registerRes.status).toBe(201);
-    expect(registerRes.body).toEqual({ id: expect.any(String), username: "Bodega", role: "observer" });
+    expect(registerRes.body).toEqual({
+      id: expect.any(String),
+      username: "Bodega",
+      role: "observer",
+      name: "Bodega",
+      active: true
+    });
 
     const loginRes = await request(app)
       .post("/auth/login")

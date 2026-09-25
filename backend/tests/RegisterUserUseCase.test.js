@@ -29,7 +29,13 @@ describe("RegisterUserUseCase", () => {
 
     const result = await useCase.execute({ username: "operator1", password: "secret123" });
 
-    expect(result).toEqual({ id: expect.any(String), username: "operator1", role: "admin" });
+    expect(result).toEqual({
+      id: expect.any(String),
+      username: "operator1",
+      role: "admin",
+      name: "operator1",
+      active: true
+    });
     expect(repository.users[0].passwordHash).toBe("hashed:secret123");
   });
 
@@ -64,7 +70,36 @@ describe("RegisterUserUseCase", () => {
       role: "observer"
     });
 
-    expect(result).toEqual({ id: expect.any(String), username: "Bodega", role: "observer" });
+    expect(result).toEqual({
+      id: expect.any(String),
+      username: "Bodega",
+      role: "observer",
+      name: "Bodega",
+      active: true
+    });
+  });
+
+  it("stores the name and inactive state", async () => {
+    const repository = new TestUserRepository();
+    const hasher = new TestPasswordHasher();
+    const useCase = new RegisterUserUseCase(repository, hasher);
+
+    const result = await useCase.execute({
+      username: "warehouse",
+      password: "secret123",
+      role: "observer",
+      name: "Bodega",
+      active: false
+    });
+
+    expect(result).toEqual({
+      id: expect.any(String),
+      username: "warehouse",
+      role: "observer",
+      name: "Bodega",
+      active: false
+    });
+    expect(repository.users[0].active).toBe(false);
   });
 
   it("throws when the role is not valid", async () => {
@@ -75,5 +110,15 @@ describe("RegisterUserUseCase", () => {
     await expect(
       useCase.execute({ username: "Bodega", password: "secret123", role: "superadmin" })
     ).rejects.toThrow("Invalid role");
+  });
+
+  it("throws when active is not a boolean", async () => {
+    const repository = new TestUserRepository();
+    const hasher = new TestPasswordHasher();
+    const useCase = new RegisterUserUseCase(repository, hasher);
+
+    await expect(
+      useCase.execute({ username: "Bodega", password: "secret123", active: "false" })
+    ).rejects.toThrow("active must be a boolean");
   });
 });

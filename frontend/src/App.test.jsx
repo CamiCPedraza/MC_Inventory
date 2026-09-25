@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { vi } from "vitest";
 import App from "./App";
 import * as api from "./api";
@@ -6,7 +6,18 @@ import * as api from "./api";
 describe("App UI", () => {
   beforeEach(() => {
     localStorage.setItem("pvcm_auth_token", "test-token");
+    localStorage.setItem(
+      "pvcm_auth_user",
+      JSON.stringify({ id: "1", username: "admin", role: "admin" })
+    );
     vi.spyOn(api, "fetchItems").mockResolvedValue([]);
+    vi.spyOn(api, "registerUser").mockImplementation(async (user) => ({
+      id: "2",
+      username: user.username,
+      role: user.role,
+      name: user.name,
+      active: user.active
+    }));
     vi.spyOn(api, "createItem").mockImplementation(async (item) => ({ id: "1", ...item }));
     vi.spyOn(api, "fetchItemQrCode").mockResolvedValue({
       qrCode: "data:image/png;base64,test",
@@ -34,6 +45,7 @@ describe("App UI", () => {
 
     expect(screen.getByText(/Inventario PVCM/i)).toBeInTheDocument();
     expect(screen.getByText(/Registrar item/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Crear usuario" })).toBeInTheDocument();
 
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
   });
@@ -85,13 +97,15 @@ describe("App UI", () => {
 
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
 
-    fireEvent.change(screen.getByLabelText(/Nombre/i), {
+    const itemForm = within(screen.getByRole("heading", { name: "Registrar item" }).closest("section"));
+
+    fireEvent.change(itemForm.getByLabelText("Nombre"), {
       target: { value: "Tornillo" }
     });
-    fireEvent.change(screen.getByLabelText(/SKU/i), {
+    fireEvent.change(itemForm.getByLabelText("SKU"), {
       target: { value: "TOR-001" }
     });
-    fireEvent.change(screen.getByLabelText(/Stock/i), {
+    fireEvent.change(itemForm.getByLabelText("Stock"), {
       target: { value: "5" }
     });
 

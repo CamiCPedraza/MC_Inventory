@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useItems } from "./hooks/useItems";
-import { clearStoredToken, clearStoredUser, getStoredToken, getStoredUser, login } from "./api";
+import { clearStoredToken, clearStoredUser, getStoredToken, getStoredUser, login, registerUser } from "./api";
 import Header from "./components/Header";
 import ItemForm from "./components/ItemForm";
 import ItemList from "./components/ItemList";
@@ -10,6 +10,7 @@ import BarcodeDisplay from "./components/BarcodeDisplay";
 import UpdateStockModal from "./components/UpdateStockModal";
 import LoginForm from "./components/LoginForm";
 import EmptyInventoryScreen from "./components/EmptyInventoryScreen";
+import UserForm from "./components/UserForm";
 
 function App() {
   const { items, loading, error, loadItems, addItem, updateItemStock, generateQr, generateBarcode, setError } = useItems();
@@ -116,6 +117,10 @@ function App() {
           onItemCreated={addItem}
           onError={setError}
         />
+      )}
+
+      {currentUser?.role === "admin" && (
+        <UserForm onUserCreated={registerUser} onError={setError} />
       )}
 
       <ErrorAlert message={error} />

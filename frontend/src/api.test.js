@@ -5,6 +5,7 @@ import {
   getStoredToken,
   getStoredUser,
   login,
+  registerUser,
   storeToken,
   storeUser
 } from "./api";
@@ -58,5 +59,32 @@ describe("auth API", () => {
     await expect(login({ username: "admin", password: "wrong" })).rejects.toThrow(
       "Invalid credentials"
     );
+  });
+
+  it("registers a user with auth token and all form fields", async () => {
+    storeToken("admin-token");
+    const user = {
+      id: "7",
+      username: "bodega",
+      password: "secret",
+      role: "observer",
+      name: "Bodega",
+      active: false
+    };
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ ...user, password: undefined })
+    });
+
+    await registerUser(user);
+
+    expect(fetch).toHaveBeenCalledWith("/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer admin-token"
+      },
+      body: JSON.stringify(user)
+    });
   });
 });

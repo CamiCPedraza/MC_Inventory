@@ -50,6 +50,24 @@ export async function login(credentials) {
   return body;
 }
 
+export async function registerUser(userData) {
+  const response = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders()
+    },
+    body: JSON.stringify(userData)
+  });
+
+  const body = await response.json();
+  if (!response.ok) {
+    throw new Error(body?.error || "Error al crear el usuario");
+  }
+
+  return body;
+}
+
 export async function fetchItems() {
   const response = await fetch(`${API_BASE}/inventory/items`, {
     headers: authHeaders()
