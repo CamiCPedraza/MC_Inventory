@@ -22,6 +22,13 @@ describe("LoginForm", () => {
     expect(screen.getByText("Credenciales inválidas")).toBeInTheDocument();
   });
 
+  it("renders the company logo instead of the old title", () => {
+    render(<LoginForm onLogin={vi.fn()} error="" />);
+
+    expect(screen.getByAltText("Logo de Comercializadora Quantto")).toBeInTheDocument();
+    expect(screen.queryByText("Inventario PVCM")).not.toBeInTheDocument();
+  });
+
   it("shows the password while hovering over the eye icon", () => {
     render(<LoginForm onLogin={vi.fn()} error="" />);
 
