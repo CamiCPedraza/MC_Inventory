@@ -46,7 +46,9 @@ userRepository.save(
     id: "seed-admin",
     username: defaultAdminUsername,
     passwordHash: bcrypt.hashSync(defaultAdminPassword, 10),
-    role: "admin"
+    role: "admin",
+    name: "Administrador",
+    active: true
   })
 );
 

@@ -23,7 +23,14 @@ class TestTokenService {
 }
 
 describe("LoginUseCase", () => {
-  const user = { id: "1", username: "admin", passwordHash: "hashed:admin123", role: "admin" };
+  const user = {
+    id: "1",
+    username: "admin",
+    passwordHash: "hashed:admin123",
+    role: "admin",
+    name: "Administrator",
+    active: true
+  };
 
   it("returns a token and user info for valid credentials", async () => {
     const repository = new TestUserRepository([user]);
@@ -32,7 +39,13 @@ describe("LoginUseCase", () => {
     const result = await useCase.execute({ username: "admin", password: "admin123" });
 
     expect(result.token).toBe("token-for-admin");
-    expect(result.user).toEqual({ id: "1", username: "admin", role: "admin" });
+    expect(result.user).toEqual({
+      id: "1",
+      username: "admin",
+      role: "admin",
+      name: "Administrator",
+      active: true
+    });
   });
 
   it("throws for an unknown username", async () => {
@@ -49,6 +62,16 @@ describe("LoginUseCase", () => {
     const useCase = new LoginUseCase(repository, new TestPasswordHasher(), new TestTokenService());
 
     await expect(useCase.execute({ username: "admin", password: "wrong" })).rejects.toThrow(
+      "Invalid credentials"
+    );
+  });
+
+  it("rejects login for an inactive user", async () => {
+    const inactiveUser = { ...user, active: false };
+    const repository = new TestUserRepository([inactiveUser]);
+    const useCase = new LoginUseCase(repository, new TestPasswordHasher(), new TestTokenService());
+
+    await expect(useCase.execute({ username: "admin", password: "admin123" })).rejects.toThrow(
       "Invalid credentials"
     );
   });

@@ -16,15 +16,26 @@ class LoginUseCase {
       throw new Error("Invalid credentials");
     }
 
+    if (!user.active) {
+      throw new Error("Invalid credentials");
+    }
+
     const token = this.tokenService.sign({
       sub: user.id,
       username: user.username,
-      role: user.role
+      role: user.role,
+      name: user.name
     });
 
     return {
       token,
-      user: { id: user.id, username: user.username, role: user.role }
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        name: user.name,
+        active: user.active
+      }
     };
   }
 }
