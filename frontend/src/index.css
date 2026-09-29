@@ -297,6 +297,12 @@ body {
   margin-top: 20px;
 }
 
+.inventory-add-action {
+  display: flex;
+  justify-content: flex-end;
+  margin: 16px 0 8px;
+}
+
 .user-create-modal {
   position: relative;
   width: min(100%, 480px);
@@ -304,6 +310,22 @@ body {
   max-height: calc(100vh - 32px);
   overflow-y: auto;
   border-radius: 10px;
+}
+
+.item-create-modal {
+  position: relative;
+  width: min(100%, 480px);
+  max-width: 480px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
+.item-create-modal .item-form-card {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .user-modal-close {
@@ -450,11 +472,56 @@ button:hover {
 
 .items-card li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   padding: 16px 0;
   border-bottom: 1px solid #e5e7eb;
+}
+
+.item-list-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-list-details strong {
+  display: block;
+}
+
+.item-list-details span {
+  display: block;
+  color: #475569;
+}
+
+.item-list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.item-list-actions button {
+  margin: 0;
+}
+
+.item-barcode-display {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.item-barcode-display img {
+  display: block;
+  width: min(100%, 320px);
+  height: auto;
+}
+
+.item-barcode-display p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 0.85rem;
 }
 
 .items-card li:last-child {
@@ -480,10 +547,6 @@ button:hover {
   display: block;
   max-width: 320px;
   margin-top: 16px;
-}
-
-.items-card li > div + button {
-  margin-left: 8px;
 }
 
 button.secondary-action {

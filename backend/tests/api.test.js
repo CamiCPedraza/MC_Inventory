@@ -46,7 +46,7 @@ describe("API routes", () => {
     const createRes = await request(app)
       .post('/inventory/items')
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ name: 'Caja', sku: 'CAJ-001', stock: 5 });
+      .send({ name: 'Caja', sku: 'CAJ-001', stock: 5, bodega: 'Central' });
 
     expect(createRes.status).toBe(201);
     const id = createRes.body.id;
@@ -71,7 +71,7 @@ describe("API routes", () => {
     const createRes = await request(app)
       .post('/inventory/items')
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ name: 'Caja2', sku: 'CAJ-002', stock: 2 });
+      .send({ name: 'Caja2', sku: 'CAJ-002', stock: 2, bodega: 'Norte' });
 
     expect(createRes.status).toBe(201);
     const id = createRes.body.id;
@@ -99,7 +99,7 @@ describe("API routes", () => {
     const createRes = await request(app)
       .post('/inventory/items')
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ name: 'Tornillo', sku: 'TOR-003', stock: 4 });
+      .send({ name: 'Tornillo', sku: 'TOR-003', stock: 4, bodega: 'Sur' });
 
     expect(createRes.status).toBe(201);
     const id = createRes.body.id;
@@ -110,8 +110,25 @@ describe("API routes", () => {
 
     expect(barcodeRes.status).toBe(200);
     expect(barcodeRes.body.item.sku).toBe('TOR-003');
+    expect(barcodeRes.body.item.bodega).toBe('Sur');
     expect(barcodeRes.body.barcodeValue).toBe('TOR-003');
     expect(barcodeRes.body.barcode).toMatch(/^data:image\/png;base64,/);
+  });
+
+  it("should show the updated item properties on QR detail page", async () => {
+    const createRes = await request(app)
+      .post('/inventory/items')
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ name: 'Tornillo rosca', sku: 'TOR-004', stock: 7, bodega: 'Almacén A' });
+
+    const response = await request(app).get(`/inventory/items/${createRes.body.id}/qr/view`);
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain("<dt>Descripción</dt>");
+    expect(response.text).toContain("<dt>Producto</dt>");
+    expect(response.text).toContain("<dt>Cantidad m</dt>");
+    expect(response.text).toContain("<dt>Bodega</dt>");
+    expect(response.text).toContain("Almacén A");
   });
 
   it("should return 404 when generating a barcode for a non-existent item", async () => {
@@ -280,7 +297,7 @@ describe("API routes", () => {
     const createRes = await request(app)
       .post("/inventory/items")
       .set("Authorization", `Bearer ${observerToken}`)
-      .send({ name: "Tornillo", sku: "TOR-999", stock: 1 });
+      .send({ name: "Tornillo", sku: "TOR-999", stock: 1, bodega: "Central" });
     expect(createRes.status).toBe(403);
 
     const updateRes = await request(app)

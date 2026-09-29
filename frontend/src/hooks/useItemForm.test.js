@@ -10,6 +10,7 @@ describe("useItemForm hook", () => {
     expect(result.current.form.name).toBe("");
     expect(result.current.form.sku).toBe("");
     expect(result.current.form.stock).toBe("");
+    expect(result.current.form.bodega).toBe("");
   });
 
   it("updates field values", () => {
@@ -20,11 +21,13 @@ describe("useItemForm hook", () => {
       result.current.updateField("name", "Tornillo");
       result.current.updateField("sku", "TOR-001");
       result.current.updateField("stock", "5");
+      result.current.updateField("bodega", "Norte");
     });
 
     expect(result.current.form.name).toBe("Tornillo");
     expect(result.current.form.sku).toBe("TOR-001");
     expect(result.current.form.stock).toBe("5");
+    expect(result.current.form.bodega).toBe("Norte");
   });
 
   it("resets form to initial state", () => {
@@ -59,6 +62,7 @@ describe("useItemForm hook", () => {
       result.current.updateField("name", "Tornillo");
       result.current.updateField("sku", "TOR-001");
       result.current.updateField("stock", "5");
+      result.current.updateField("bodega", "Norte");
     });
 
     const mockEvent = { preventDefault: vi.fn() };
@@ -70,7 +74,8 @@ describe("useItemForm hook", () => {
     expect(mockOnSubmit).toHaveBeenCalledWith({
       name: "Tornillo",
       sku: "TOR-001",
-      stock: 5
+      stock: 5,
+      bodega: "Norte"
     });
   });
 
@@ -82,6 +87,7 @@ describe("useItemForm hook", () => {
       result.current.updateField("name", "Tornillo");
       result.current.updateField("sku", "TOR-001");
       result.current.updateField("stock", "5");
+      result.current.updateField("bodega", "Norte");
     });
 
     const mockEvent = { preventDefault: vi.fn() };
@@ -93,5 +99,6 @@ describe("useItemForm hook", () => {
     expect(result.current.form.name).toBe("");
     expect(result.current.form.sku).toBe("");
     expect(result.current.form.stock).toBe("");
+    expect(result.current.form.bodega).toBe("");
   });
 });

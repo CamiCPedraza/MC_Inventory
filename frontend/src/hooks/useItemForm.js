@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const initialForm = { name: "", sku: "", stock: "" };
+const initialForm = { name: "", sku: "", stock: "", bodega: "" };
 
 export function useItemForm(onSubmit) {
   const [form, setForm] = useState(initialForm);
@@ -10,7 +10,7 @@ export function useItemForm(onSubmit) {
   }, []);
 
   const validate = useCallback(() => {
-    if (!form.name || !form.sku || !form.stock) {
+    if (!form.name || !form.sku || !form.stock || !form.bodega) {
       return "Todos los campos son obligatorios.";
     }
     return null;
@@ -25,7 +25,8 @@ export function useItemForm(onSubmit) {
       await onSubmit({
         name: form.name,
         sku: form.sku,
-        stock: Number(form.stock)
+        stock: Number(form.stock),
+        bodega: form.bodega.trim()
       });
 
       setForm(initialForm);

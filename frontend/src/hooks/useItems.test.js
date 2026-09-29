@@ -6,19 +6,21 @@ import * as api from "../api";
 describe("useItems hook", () => {
   beforeEach(() => {
     vi.spyOn(api, "fetchItems").mockResolvedValue([
-      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
+      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5, bodega: "Norte" }
     ]);
     vi.spyOn(api, "createItem").mockResolvedValue({
       id: "2",
       name: "Clavo",
       sku: "CLA-001",
-      stock: 10
+      stock: 10,
+      bodega: "Central"
     });
     vi.spyOn(api, "updateItem").mockResolvedValue({
       id: "1",
       name: "Tornillo",
       sku: "TOR-001",
-      stock: 8
+      stock: 8,
+      bodega: "Norte"
     });
     vi.spyOn(api, "fetchItemQrCode").mockResolvedValue({
       qrCode: "data:image/png;base64,test",
@@ -62,7 +64,8 @@ describe("useItems hook", () => {
       await result.current.addItem({
         name: "Clavo",
         sku: "CLA-001",
-        stock: 10
+        stock: 10,
+        bodega: "Central"
       });
     });
 

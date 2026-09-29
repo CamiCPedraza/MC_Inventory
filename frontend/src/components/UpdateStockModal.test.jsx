@@ -14,9 +14,9 @@ describe("UpdateStockModal", () => {
       />
     );
 
-    expect(screen.getByText(/Actualizar stock/i)).toBeInTheDocument();
+    expect(screen.getByText(/Actualizar cantidad/i)).toBeInTheDocument();
     expect(screen.getByText("Tornillo")).toBeInTheDocument();
-    expect(screen.getByText(/Stock actual:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cantidad actual:/i)).toBeInTheDocument();
   });
 
   it("does not render when isOpen is false", () => {
@@ -30,7 +30,7 @@ describe("UpdateStockModal", () => {
       />
     );
 
-    expect(screen.queryByText(/Actualizar stock/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Actualizar cantidad/i)).not.toBeInTheDocument();
   });
 
   it("calls onConfirm with new stock value", () => {
@@ -84,7 +84,7 @@ describe("UpdateStockModal", () => {
     fireEvent.change(input, { target: { value: "-5" } });
     fireEvent.click(screen.getByText(/Confirmar/i));
 
-    expect(screen.getByText(/Stock debe ser un número válido/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cantidad \(metros\) debe ser un número válido/i)).toBeInTheDocument();
   });
 
   it("confirms on Enter key", () => {

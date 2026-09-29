@@ -18,7 +18,7 @@ class TestQrGenerator {
 
 describe("GenerateItemQrCodeUseCase", () => {
   it("should generate a QR code for an existing item", async () => {
-    const item = { id: "1", name: "Tornillo", sku: "TOR-001", stock: 10 };
+    const item = { id: "1", name: "Tornillo", sku: "TOR-001", stock: 10, bodega: "Norte" };
     const repository = new TestRepository([item]);
     const qrGenerator = new TestQrGenerator();
     const useCase = new GenerateItemQrCodeUseCase(repository, qrGenerator, "http://localhost:3000");
@@ -28,6 +28,7 @@ describe("GenerateItemQrCodeUseCase", () => {
     expect(result.item).toBe(item);
     expect(result.qrCode).toMatch(/^data:image\/png;base64,/);
     expect(result.qrUrl).toBe("http://localhost:3000/inventory/items/1/qr/view");
+    expect(result.item.bodega).toBe("Norte");
   });
 
   it("should throw when item does not exist", async () => {
