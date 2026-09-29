@@ -1,18 +1,25 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { vi } from "vitest";
-import UserForm from "./UserForm";
+import UserFormModal from "./UserFormModal";
 
-describe("UserForm", () => {
-  it("submits all user fields and shows confirmation", async () => {
+describe("UserFormModal", () => {
+  it("submits user fields as active and notifies the parent", async () => {
     const onUserCreated = vi.fn().mockResolvedValue({ username: "bodega" });
-    render(<UserForm onUserCreated={onUserCreated} onError={vi.fn()} />);
-    const form = within(screen.getByRole("heading", { name: "Crear usuario" }).closest("section"));
+    const onUserCreatedSuccessfully = vi.fn();
+    render(
+      <UserFormModal
+        onUserCreated={onUserCreated}
+        onUserCreatedSuccessfully={onUserCreatedSuccessfully}
+        onError={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
+    const form = within(screen.getByRole("dialog"));
 
     fireEvent.change(form.getByLabelText("Nombre de usuario"), { target: { value: "bodega" } });
     fireEvent.change(form.getByLabelText("Contraseña"), { target: { value: "secret123" } });
     fireEvent.change(form.getByLabelText("Rol"), { target: { value: "observer" } });
     fireEvent.change(form.getByLabelText("Nombre"), { target: { value: "Bodega" } });
-    fireEvent.click(form.getByRole("radio", { name: "No" }));
     fireEvent.click(form.getByRole("button", { name: "Crear usuario" }));
 
     await waitFor(() => {
@@ -21,14 +28,22 @@ describe("UserForm", () => {
         password: "secret123",
         role: "observer",
         name: "Bodega",
-        active: false
+        active: true
       });
     });
-    expect(await screen.findByRole("status")).toHaveTextContent("Usuario bodega creado correctamente.");
+    expect(onUserCreatedSuccessfully).toHaveBeenCalledWith({ username: "bodega" });
+    expect(form.queryByText("Activo")).not.toBeInTheDocument();
   });
 
   it("shows the password while hovering the eye icon", () => {
-    render(<UserForm onUserCreated={vi.fn()} onError={vi.fn()} />);
+    render(
+      <UserFormModal
+        onUserCreated={vi.fn()}
+        onUserCreatedSuccessfully={vi.fn()}
+        onError={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
 
     const passwordInput = screen.getByLabelText("Contraseña");
     const visibilityControl = screen.getByRole("img", { name: "ver contraseña" });
@@ -46,7 +61,14 @@ describe("UserForm", () => {
   it("forwards creation errors to the parent", async () => {
     const onError = vi.fn();
     const onUserCreated = vi.fn().mockRejectedValue(new Error("Username already exists"));
-    render(<UserForm onUserCreated={onUserCreated} onError={onError} />);
+    render(
+      <UserFormModal
+        onUserCreated={onUserCreated}
+        onUserCreatedSuccessfully={vi.fn()}
+        onError={onError}
+        onCancel={vi.fn()}
+      />
+    );
 
     fireEvent.change(screen.getByLabelText("Nombre de usuario"), { target: { value: "bodega" } });
     fireEvent.change(screen.getByLabelText("Contraseña"), { target: { value: "secret123" } });

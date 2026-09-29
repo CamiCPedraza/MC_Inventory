@@ -18,6 +18,10 @@ class InMemoryUserRepository extends UserRepository {
   findById(id) {
     return this.users.find((user) => user.id === id);
   }
+
+  findAll() {
+    return [...this.users];
+  }
 }
 
 module.exports = InMemoryUserRepository;

@@ -164,6 +164,50 @@ describe("API routes", () => {
     });
   });
 
+  it("should list users for admin without exposing password hashes", async () => {
+    const createRes = await request(app)
+      .post("/auth/register")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        username: "warehouse-list-test",
+        password: "safe-password",
+        role: "observer",
+        name: "Bodega Central",
+        active: false
+      });
+    expect(createRes.status).toBe(201);
+
+    const response = await request(app)
+      .get("/auth/users")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(expect.arrayContaining([
+      { name: "Administrador", username: "admin", role: "admin", active: true },
+      { name: "Bodega Central", username: "warehouse-list-test", role: "observer", active: true }
+    ]));
+    expect(JSON.stringify(response.body)).not.toContain("passwordHash");
+    expect(JSON.stringify(response.body)).not.toContain("safe-password");
+  });
+
+  it("should deny user listing to observer role", async () => {
+    const createRes = await request(app)
+      .post("/auth/register")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ username: "observer-list-test", password: "observer-password", role: "observer" });
+    expect(createRes.status).toBe(201);
+
+    const loginRes = await request(app)
+      .post("/auth/login")
+      .send({ username: "observer-list-test", password: "observer-password" });
+
+    const response = await request(app)
+      .get("/auth/users")
+      .set("Authorization", `Bearer ${loginRes.body.token}`);
+
+    expect(response.status).toBe(403);
+  });
+
   it("should reject registration without a valid token", async () => {
     const response = await request(app)
       .post("/auth/register")
