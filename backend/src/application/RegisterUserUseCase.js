@@ -7,17 +7,13 @@ class RegisterUserUseCase {
     this.passwordHasher = passwordHasher;
   }
 
-  async execute({ username, password, role = ADMIN, name = username, active = true }) {
+  async execute({ username, password, role = ADMIN, name = username }) {
     if (!username || !password) {
       throw new Error("username and password are required");
     }
 
     if (!ALL_ROLES.includes(role)) {
       throw new Error(`Invalid role. Allowed roles: ${ALL_ROLES.join(", ")}`);
-    }
-
-    if (typeof active !== "boolean") {
-      throw new Error("active must be a boolean");
     }
 
     if (this.userRepository.findByUsername(username)) {
@@ -31,7 +27,7 @@ class RegisterUserUseCase {
       passwordHash,
       role,
       name,
-      active
+      active: true
     });
 
     this.userRepository.save(user);

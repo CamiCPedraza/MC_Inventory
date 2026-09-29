@@ -79,7 +79,7 @@ describe("RegisterUserUseCase", () => {
     });
   });
 
-  it("stores the name and inactive state", async () => {
+  it("always creates users as active even if an inactive value is sent", async () => {
     const repository = new TestUserRepository();
     const hasher = new TestPasswordHasher();
     const useCase = new RegisterUserUseCase(repository, hasher);
@@ -97,9 +97,9 @@ describe("RegisterUserUseCase", () => {
       username: "warehouse",
       role: "observer",
       name: "Bodega",
-      active: false
+      active: true
     });
-    expect(repository.users[0].active).toBe(false);
+    expect(repository.users[0].active).toBe(true);
   });
 
   it("throws when the role is not valid", async () => {
@@ -112,13 +112,4 @@ describe("RegisterUserUseCase", () => {
     ).rejects.toThrow("Invalid role");
   });
 
-  it("throws when active is not a boolean", async () => {
-    const repository = new TestUserRepository();
-    const hasher = new TestPasswordHasher();
-    const useCase = new RegisterUserUseCase(repository, hasher);
-
-    await expect(
-      useCase.execute({ username: "Bodega", password: "secret123", active: "false" })
-    ).rejects.toThrow("active must be a boolean");
-  });
 });

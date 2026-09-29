@@ -68,6 +68,19 @@ export async function registerUser(userData) {
   return body;
 }
 
+export async function fetchUsers() {
+  const response = await fetch(`${API_BASE}/auth/users`, {
+    headers: authHeaders()
+  });
+
+  const body = await response.json();
+  if (!response.ok) {
+    throw new Error(body?.error || "No se pudieron cargar los usuarios");
+  }
+
+  return body;
+}
+
 export async function fetchItems() {
   const response = await fetch(`${API_BASE}/inventory/items`, {
     headers: authHeaders()

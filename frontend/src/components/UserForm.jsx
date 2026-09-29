@@ -4,25 +4,21 @@ const initialForm = {
   username: "",
   password: "",
   role: "observer",
-  name: "",
-  active: "true"
+  name: ""
 };
 
-function UserForm({ onUserCreated, onError }) {
+function UserForm({ onUserCreated, onUserCreatedSuccessfully, onError, onCancel }) {
   const [form, setForm] = useState(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
-    setSuccessMessage("");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
-    setSuccessMessage("");
     onError("");
 
     try {
@@ -31,10 +27,10 @@ function UserForm({ onUserCreated, onError }) {
         password: form.password,
         role: form.role,
         name: form.name.trim(),
-        active: form.active === "true"
+        active: true
       });
       setForm(initialForm);
-      setSuccessMessage(`Usuario ${user.username} creado correctamente.`);
+      onUserCreatedSuccessfully(user);
     } catch (error) {
       onError(error.message);
     } finally {
@@ -43,8 +39,8 @@ function UserForm({ onUserCreated, onError }) {
   };
 
   return (
-    <section className="form-card">
-      <h2>Crear usuario</h2>
+    <div className="user-form-content">
+      <h2 id="user-form-title">Agregar usuario</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Nombre de usuario
@@ -114,38 +110,16 @@ function UserForm({ onUserCreated, onError }) {
           />
         </label>
 
-        <fieldset className="radio-group" disabled={isSubmitting}>
-          <legend>Activo</legend>
-          <div className="radio-options">
-            <label>
-              <input
-                type="radio"
-                name="active"
-                value="true"
-                checked={form.active === "true"}
-                onChange={(event) => updateField("active", event.target.value)}
-              />
-              Sí
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="active"
-                value="false"
-                checked={form.active === "false"}
-                onChange={(event) => updateField("active", event.target.value)}
-              />
-              No
-            </label>
-          </div>
-        </fieldset>
-
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creando usuario..." : "Crear usuario"}
-        </button>
+        <div className="modal-actions">
+          <button type="button" className="secondary" onClick={onCancel} disabled={isSubmitting}>
+            Cancelar
+          </button>
+          <button type="submit" className="primary" disabled={isSubmitting}>
+            {isSubmitting ? "Creando usuario..." : "Crear usuario"}
+          </button>
+        </div>
       </form>
-      {successMessage && <p className="success-message" role="status">{successMessage}</p>}
-    </section>
+    </div>
   );
 }
 

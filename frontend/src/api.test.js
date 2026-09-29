@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   clearStoredToken,
   clearStoredUser,
+  fetchUsers,
   getStoredToken,
   getStoredUser,
   login,
@@ -85,6 +86,20 @@ describe("auth API", () => {
         Authorization: "Bearer admin-token"
       },
       body: JSON.stringify(user)
+    });
+  });
+
+  it("fetches the user list with the stored authorization token", async () => {
+    storeToken("admin-token");
+    const users = [{ name: "Bodega Central", username: "bodega", active: true }];
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => users
+    });
+
+    await expect(fetchUsers()).resolves.toEqual(users);
+    expect(fetch).toHaveBeenCalledWith("/auth/users", {
+      headers: { Authorization: "Bearer admin-token" }
     });
   });
 });

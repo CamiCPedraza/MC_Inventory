@@ -200,6 +200,137 @@ body {
   text-decoration: underline;
 }
 
+.users-table-section {
+  margin-top: 12px;
+}
+
+.users-table-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.users-table-heading h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.users-table-heading button {
+  padding: 8px 12px;
+}
+
+.users-table-wrap {
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #d9e0e8;
+  border-radius: 8px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.users-table th,
+.users-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #e5eaf0;
+}
+
+.users-table th {
+  background: #f6f8fa;
+  color: #536171;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.users-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.users-table td[colspan="3"] {
+  padding: 22px 16px;
+  color: #64748b;
+  text-align: center;
+}
+
+.user-status {
+  display: inline-block;
+  min-width: 44px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 0.82rem;
+}
+
+.user-status.is-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.user-status.is-inactive {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.users-load-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+.users-load-error p {
+  margin: 0;
+}
+
+.users-add-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.user-create-modal {
+  position: relative;
+  width: min(100%, 480px);
+  max-width: 480px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
+.user-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 4px 10px;
+  background: transparent;
+  color: #64748b;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.user-modal-close:hover {
+  background: #f1f5f9;
+  color: #1f2937;
+}
+
+.user-form-content h2 {
+  margin: 0 32px 20px 0;
+  font-size: 1.35rem;
+}
+
+.user-form-content .modal-actions {
+  margin-top: 20px;
+}
+
 .app-shell {
   max-width: 960px;
   margin: 0 auto;

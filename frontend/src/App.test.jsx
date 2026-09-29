@@ -20,6 +20,9 @@ describe("App UI", () => {
       JSON.stringify({ id: "1", username: "admin", role: "admin" })
     );
     vi.spyOn(api, "fetchItems").mockResolvedValue([]);
+    vi.spyOn(api, "fetchUsers").mockResolvedValue([
+      { name: "Administrador", username: "admin", active: true }
+    ]);
     vi.spyOn(api, "registerUser").mockImplementation(async (user) => ({
       id: "2",
       username: user.username,
@@ -69,7 +72,8 @@ describe("App UI", () => {
 
     fireEvent.click(screen.getByRole("link", { name: "Usuarios" }));
     expect(await screen.findByRole("heading", { name: "Usuarios" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Crear usuario" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Agregar usuario" })).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("shows a blank inventory screen for an observer when there are no items", async () => {

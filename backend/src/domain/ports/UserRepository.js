@@ -10,6 +10,10 @@ class UserRepository {
   findById() {
     throw new Error("Method not implemented");
   }
+
+  findAll() {
+    throw new Error("Method not implemented");
+  }
 }
 
 module.exports = UserRepository;

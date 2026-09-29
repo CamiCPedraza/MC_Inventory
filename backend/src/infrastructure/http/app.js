@@ -10,6 +10,7 @@ const RegisterItemUseCase = require("../../application/RegisterItemUseCase");
 const GenerateItemQrCodeUseCase = require("../../application/GenerateItemQrCodeUseCase");
 const GenerateItemBarcodeUseCase = require("../../application/GenerateItemBarcodeUseCase");
 const RegisterUserUseCase = require("../../application/RegisterUserUseCase");
+const ListUsersUseCase = require("../../application/ListUsersUseCase");
 const LoginUseCase = require("../../application/LoginUseCase");
 const User = require("../../domain/User");
 const authenticate = require("./middleware/authenticate");
@@ -34,6 +35,7 @@ const registerItemUseCase = new RegisterItemUseCase(itemRepository);
 const generateItemQrCodeUseCase = new GenerateItemQrCodeUseCase(itemRepository, qrCodeGenerator);
 const generateItemBarcodeUseCase = new GenerateItemBarcodeUseCase(itemRepository, barcodeGenerator);
 const registerUserUseCase = new RegisterUserUseCase(userRepository, passwordHasher);
+const listUsersUseCase = new ListUsersUseCase(userRepository);
 const loginUseCase = new LoginUseCase(userRepository, passwordHasher, tokenService);
 
 const defaultAdminUsername = process.env.ADMIN_USERNAME || "admin";
@@ -75,6 +77,10 @@ app.post("/auth/register", ...requireAdmin, async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+});
+
+app.get("/auth/users", ...requireAdmin, (req, res) => {
+  res.json(listUsersUseCase.execute());
 });
 
 app.get("/inventory/items/:id/qr/view", (req, res) => {

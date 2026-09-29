@@ -10,6 +10,7 @@ describe("InMemoryUserRepository", () => {
 
     expect(repository.findByUsername("admin")).toBe(user);
     expect(repository.findById("1")).toBe(user);
+    expect(repository.findAll()).toEqual([user]);
   });
 
   it("returns undefined when user is not found", () => {
@@ -17,5 +18,6 @@ describe("InMemoryUserRepository", () => {
 
     expect(repository.findByUsername("ghost")).toBeUndefined();
     expect(repository.findById("ghost")).toBeUndefined();
+    expect(repository.findAll()).toEqual([]);
   });
 });
