@@ -5,7 +5,7 @@ function Header({ itemCount }) {
 
   return (
     <header>
-      <h1>Inventario PVCM</h1>
+      <h1>Comercializadora Quantto | Sistema de inventario</h1>
       <p>{displayCount} items registrados</p>
     </header>
   );

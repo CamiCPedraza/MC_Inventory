@@ -1,4 +1,5 @@
 import { useState } from "react";
+import quantoLogo from "../assets/Quantto_logo.jpeg";
 
 function LoginForm({ onLogin, error }) {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
@@ -22,7 +23,7 @@ function LoginForm({ onLogin, error }) {
   return (
     <main className="auth-shell">
       <section className="login-card">
-        <h1>Inventario PVCM</h1>
+        <img className="login-logo" src={quantoLogo} alt="Logo de Comercializadora Quantto" />
         <h2>Iniciar sesión</h2>
         <form onSubmit={handleSubmit}>
           <label>

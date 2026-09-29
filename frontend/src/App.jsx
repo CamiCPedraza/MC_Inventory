@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { useItems } from "./hooks/useItems";
 import { clearStoredToken, clearStoredUser, getStoredToken, getStoredUser, login, registerUser } from "./api";
-import Header from "./components/Header";
-import ItemForm from "./components/ItemForm";
-import ItemList from "./components/ItemList";
-import ErrorAlert from "./components/ErrorAlert";
-import QRDisplay from "./components/QRDisplay";
-import BarcodeDisplay from "./components/BarcodeDisplay";
-import UpdateStockModal from "./components/UpdateStockModal";
+import AdminDashboard from "./components/AdminDashboard";
+import AdminLayout from "./components/AdminLayout";
+import InventoryPage from "./components/InventoryPage";
 import LoginForm from "./components/LoginForm";
 import EmptyInventoryScreen from "./components/EmptyInventoryScreen";
-import UserForm from "./components/UserForm";
+import UserAdministrationPage from "./components/UserAdministrationPage";
 
 function App() {
+  const navigate = useNavigate();
   const { items, loading, error, loadItems, addItem, updateItemStock, generateQr, generateBarcode, setError } = useItems();
   const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(getStoredToken()));
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
@@ -38,6 +36,7 @@ function App() {
       const result = await login(credentials);
       setCurrentUser(result.user);
       setIsAuthenticated(true);
+      navigate(result.user.role === "admin" ? "/dashboard" : "/inventory", { replace: true });
     } catch (err) {
       setAuthError(err.message);
     }
@@ -49,6 +48,7 @@ function App() {
     setCurrentUser(null);
     setIsAuthenticated(false);
     setAuthError("");
+    navigate("/", { replace: true });
   };
 
   if (!isAuthenticated) {
@@ -105,47 +105,42 @@ function App() {
     setModalState({ isOpen: false, itemId: null, itemName: "", currentStock: 0 });
   };
 
+  const inventoryPage = (
+    <InventoryPage
+      items={items}
+      loading={loading}
+      error={error}
+      isObserver={isObserver}
+      onItemCreated={addItem}
+      onError={setError}
+      onGenerateQr={handleGenerateQr}
+      onGenerateBarcode={handleGenerateBarcode}
+      onUpdateStock={handleUpdateStock}
+      qrInfo={qrInfo}
+      barcodeInfo={barcodeInfo}
+      modalState={modalState}
+      onConfirmUpdate={handleConfirmUpdate}
+      onCancelUpdate={handleCancelUpdate}
+    />
+  );
+
+  if (isObserver) {
+    return <AdminLayout itemCount={items.length} onLogout={handleLogout}>{inventoryPage}</AdminLayout>;
+  }
+
   return (
-    <div className="app-shell">
-      <div className="app-toolbar">
-        <Header itemCount={items.length} />
-        <button className="secondary-action" onClick={handleLogout}>Cerrar sesión</button>
-      </div>
-
-      {!isObserver && (
-        <ItemForm
-          onItemCreated={addItem}
-          onError={setError}
+    <Routes>
+      <Route element={<AdminLayout itemCount={items.length} onLogout={handleLogout} />}>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<AdminDashboard />} />
+        <Route path="/inventory" element={inventoryPage} />
+        <Route
+          path="/users"
+          element={<UserAdministrationPage onUserCreated={registerUser} error={error} onError={setError} />}
         />
-      )}
-
-      {currentUser?.role === "admin" && (
-        <UserForm onUserCreated={registerUser} onError={setError} />
-      )}
-
-      <ErrorAlert message={error} />
-
-      <ItemList
-        items={items}
-        loading={loading}
-        onGenerateQr={handleGenerateQr}
-        onGenerateBarcode={handleGenerateBarcode}
-        onUpdateStock={handleUpdateStock}
-        readOnly={isObserver}
-      />
-
-      <QRDisplay qrInfo={qrInfo} />
-
-      <BarcodeDisplay barcodeInfo={barcodeInfo} />
-
-      <UpdateStockModal
-        isOpen={modalState.isOpen}
-        itemName={modalState.itemName}
-        currentStock={modalState.currentStock}
-        onConfirm={handleConfirmUpdate}
-        onCancel={handleCancelUpdate}
-      />
-    </div>
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Route>
+    </Routes>
   );
 }
 

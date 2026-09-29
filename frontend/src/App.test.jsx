@@ -1,7 +1,16 @@
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { vi } from "vitest";
+import { MemoryRouter } from "react-router-dom";
 import App from "./App";
 import * as api from "./api";
+
+function renderApp(initialRoute = "/dashboard") {
+  return render(
+    <MemoryRouter initialEntries={[initialRoute]}>
+      <App />
+    </MemoryRouter>
+  );
+}
 
 describe("App UI", () => {
   beforeEach(() => {
@@ -41,13 +50,26 @@ describe("App UI", () => {
   });
 
   it("renders the main sections", async () => {
-    render(<App />);
+    renderApp();
 
-    expect(screen.getByText(/Inventario PVCM/i)).toBeInTheDocument();
-    expect(screen.getByText(/Registrar item/i)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Crear usuario" })).toBeInTheDocument();
+    expect(screen.getByText("Comercializadora Quantto | Sistema de inventario")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Panel de control" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Administrar inventario/i })).toHaveAttribute("href", "/inventory");
+    expect(screen.getByRole("link", { name: /Administrar usuarios/i })).toHaveAttribute("href", "/users");
 
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
+  });
+
+  it("navigates from the dashboard to independent inventory and user pages", async () => {
+    renderApp();
+
+    fireEvent.click(screen.getByRole("link", { name: /Administrar inventario/i }));
+    expect(await screen.findByRole("heading", { name: "Inventario" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Registrar item" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("link", { name: "Usuarios" }));
+    expect(await screen.findByRole("heading", { name: "Usuarios" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Crear usuario" })).toBeInTheDocument();
   });
 
   it("shows a blank inventory screen for an observer when there are no items", async () => {
@@ -56,7 +78,7 @@ describe("App UI", () => {
       JSON.stringify({ id: "2", username: "Bodega", role: "observer" })
     );
 
-    render(<App />);
+    renderApp("/inventory");
 
     await waitFor(() =>
       expect(screen.getByText(/No hay inventario registrado en este momento/i)).toBeInTheDocument()
@@ -74,7 +96,7 @@ describe("App UI", () => {
       { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
     ]);
 
-    render(<App />);
+    renderApp("/inventory");
 
     await waitFor(() => expect(screen.getByText("Tornillo")).toBeInTheDocument());
 
@@ -85,7 +107,7 @@ describe("App UI", () => {
   });
 
   it("displays loading state then empty message", async () => {
-    render(<App />);
+    renderApp("/inventory");
 
     expect(screen.getByText(/Cargando items/i)).toBeInTheDocument();
 
@@ -93,7 +115,7 @@ describe("App UI", () => {
   });
 
   it("creates a new item and displays it in the list", async () => {
-    render(<App />);
+    renderApp("/inventory");
 
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
 
@@ -127,7 +149,7 @@ describe("App UI", () => {
       { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
     ]);
 
-    render(<App />);
+    renderApp("/inventory");
 
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
 
@@ -145,7 +167,7 @@ describe("App UI", () => {
       { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
     ]);
 
-    render(<App />);
+    renderApp("/inventory");
 
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
 
@@ -163,7 +185,7 @@ describe("App UI", () => {
       { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
     ]);
 
-    render(<App />);
+    renderApp("/inventory");
 
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
 

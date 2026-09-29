@@ -4,7 +4,7 @@ import Header from "./Header";
 describe("Header", () => {
   it("renders the title", () => {
     render(<Header itemCount={5} />);
-    expect(screen.getByText("Inventario PVCM")).toBeInTheDocument();
+    expect(screen.getByText("Comercializadora Quantto | Sistema de inventario")).toBeInTheDocument();
   });
 
   it("displays the item count", () => {
