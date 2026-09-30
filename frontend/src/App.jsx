@@ -54,9 +54,10 @@ function App() {
   }
 
   const isObserver = currentUser?.role === "observer";
+  const userName = currentUser?.name || currentUser?.username;
 
   if (isObserver && !loading && items.length === 0) {
-    return <EmptyInventoryScreen onLogout={handleLogout} />;
+    return <EmptyInventoryScreen onLogout={handleLogout} userName={userName} />;
   }
 
   const handleGenerateBarcode = (itemId) => generateBarcode(itemId);
@@ -102,12 +103,12 @@ function App() {
   );
 
   if (isObserver) {
-    return <AdminLayout itemCount={items.length} onLogout={handleLogout}>{inventoryPage}</AdminLayout>;
+    return <AdminLayout onLogout={handleLogout} userName={userName} isObserver>{inventoryPage}</AdminLayout>;
   }
 
   return (
     <Routes>
-      <Route element={<AdminLayout itemCount={items.length} onLogout={handleLogout} />}>
+      <Route element={<AdminLayout onLogout={handleLogout} userName={userName} />}>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<AdminDashboard />} />
         <Route path="/inventory" element={inventoryPage} />

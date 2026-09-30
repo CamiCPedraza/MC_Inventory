@@ -39,7 +39,9 @@ describe("UserAdministrationPage", () => {
     expect(within(rows[1]).getByText("Sí")).toBeInTheDocument();
     expect(within(rows[2]).getByText("No")).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Agregar usuario" })).toBeInTheDocument();
+    const refreshButton = screen.getByRole("button", { name: "Actualizar lista" });
+    const addUserButton = screen.getByRole("button", { name: "Agregar usuario" });
+    expect(addUserButton.parentElement).toBe(refreshButton.parentElement);
   });
 
   it("refreshes the user list after successful creation", async () => {

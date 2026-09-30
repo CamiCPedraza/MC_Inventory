@@ -3,20 +3,9 @@ import Header from "./Header";
 
 describe("Header", () => {
   it("renders the title", () => {
-    render(<Header itemCount={5} />);
+    render(<Header />);
     expect(screen.getByText("Comercializadora Quantto | Sistema de inventario")).toBeInTheDocument();
-  });
-
-  it("displays the item count", () => {
-    render(<Header itemCount={10} />);
-    expect(screen.getByText("10 items registrados")).toBeInTheDocument();
-  });
-
-  it("updates count when prop changes", () => {
-    const { rerender } = render(<Header itemCount={5} />);
-    expect(screen.getByText("5 items registrados")).toBeInTheDocument();
-
-    rerender(<Header itemCount={8} />);
-    expect(screen.getByText("8 items registrados")).toBeInTheDocument();
+    expect(screen.getByAltText("Logo de Comercializadora Quantto")).toBeInTheDocument();
+    expect(screen.queryByText(/items registrados/i)).not.toBeInTheDocument();
   });
 });

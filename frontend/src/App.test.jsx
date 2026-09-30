@@ -17,7 +17,7 @@ describe("App UI", () => {
     localStorage.setItem("pvcm_auth_token", "test-token");
     localStorage.setItem(
       "pvcm_auth_user",
-      JSON.stringify({ id: "1", username: "admin", role: "admin" })
+      JSON.stringify({ id: "1", username: "admin", name: "Admin Principal", role: "admin" })
     );
     vi.spyOn(api, "fetchItems").mockResolvedValue([]);
     vi.spyOn(api, "fetchUsers").mockResolvedValue([
@@ -57,6 +57,7 @@ describe("App UI", () => {
     renderApp();
 
     expect(screen.getByText("Comercializadora Quantto | Sistema de inventario")).toBeInTheDocument();
+    expect(screen.getByText("Admin Principal")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Panel de control" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Administrar inventario/i })).toHaveAttribute("href", "/inventory");
     expect(screen.getByRole("link", { name: /Administrar usuarios/i })).toHaveAttribute("href", "/users");
@@ -82,7 +83,7 @@ describe("App UI", () => {
   it("shows a blank inventory screen for an observer when there are no items", async () => {
     localStorage.setItem(
       "pvcm_auth_user",
-      JSON.stringify({ id: "2", username: "Bodega", role: "observer" })
+      JSON.stringify({ id: "2", username: "Bodega", name: "Bodega Central", role: "observer" })
     );
 
     renderApp("/inventory");
@@ -91,6 +92,7 @@ describe("App UI", () => {
       expect(screen.getByText(/No hay inventario registrado en este momento/i)).toBeInTheDocument()
     );
 
+    expect(screen.getByText("Bodega Central")).toBeInTheDocument();
     expect(screen.queryByText(/Registrar item/i)).not.toBeInTheDocument();
   });
 
@@ -107,6 +109,9 @@ describe("App UI", () => {
 
     await waitFor(() => expect(screen.getByText("Descripción: Tornillo")).toBeInTheDocument());
 
+    expect(screen.getByRole("link", { name: "Inventario" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Panel" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
     expect(screen.queryByText(/Registrar item/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Generar QR/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Generar código de barras/i)).not.toBeInTheDocument();

@@ -50,9 +50,14 @@ function UserAdministrationPage({ onUserCreated, error, onError }) {
       <section className="users-table-section" aria-labelledby="users-list-title">
         <div className="users-table-heading">
           <h3 id="users-list-title">Usuarios creados</h3>
-          <button type="button" className="secondary-action" onClick={loadUsers} disabled={loading}>
-            {loading ? "Actualizando..." : "Actualizar lista"}
-          </button>
+          <div className="users-table-actions">
+            <button type="button" className="secondary-action" onClick={loadUsers} disabled={loading}>
+              {loading ? "Actualizando..." : "Actualizar lista"}
+            </button>
+            <button type="button" onClick={() => setIsCreateOpen(true)}>
+              Agregar usuario
+            </button>
+          </div>
         </div>
         {loadError && (
           <div className="users-load-error" role="alert">
@@ -94,11 +99,6 @@ function UserAdministrationPage({ onUserCreated, error, onError }) {
         </div>
       </section>
       {successMessage && <p className="success-message" role="status">{successMessage}</p>}
-      <div className="users-add-action">
-        <button type="button" onClick={() => setIsCreateOpen(true)}>
-          Agregar usuario
-        </button>
-      </div>
       {isCreateOpen && (
         <UserFormModal
           onUserCreated={handleUserCreated}

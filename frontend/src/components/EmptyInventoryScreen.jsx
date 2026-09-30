@@ -1,4 +1,4 @@
-function EmptyInventoryScreen({ onLogout }) {
+function EmptyInventoryScreen({ onLogout, userName }) {
   return (
     <main className="auth-shell">
       <section className="login-card">
@@ -7,6 +7,7 @@ function EmptyInventoryScreen({ onLogout }) {
         <button className="secondary-action" onClick={onLogout}>
           Cerrar sesión
         </button>
+        {userName && <p className="account-name">{userName}</p>}
       </section>
     </main>
   );
