@@ -1,3 +1,13 @@
+:root {
+  --brand-navy: #102b46;
+  --brand-navy-hover: #183d60;
+  --brand-teal: #35b7b2;
+  --brand-teal-hover: #279f9b;
+  --brand-teal-soft: #e5f5f3;
+  --brand-navy-soft: #eaf0f5;
+  --text-muted: #596b7c;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -38,7 +48,7 @@ body {
 
 .login-card h2 {
   margin: 0 0 24px;
-  color: #475569;
+  color: var(--brand-navy);
   font-size: 1.25rem;
 }
 
@@ -70,7 +80,7 @@ body {
 .eye-icon {
   width: 20px;
   height: 20px;
-  stroke: #64748b;
+  stroke: var(--brand-navy);
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -83,17 +93,48 @@ body {
   gap: 16px;
 }
 
+.account-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex: 0 0 auto;
+}
+
+.account-actions .secondary-action {
+  margin-left: 0;
+}
+
+.account-name {
+  max-width: 220px;
+  overflow-wrap: anywhere;
+  color: var(--brand-navy);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: right;
+}
+
 .brand-link {
   color: inherit;
   text-decoration: none;
 }
 
 .brand-link header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   margin-bottom: 16px;
 }
 
+.brand-header img {
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
 .brand-link header h1 {
-  max-width: 560px;
+  max-width: 600px;
   font-size: 1.6rem;
   line-height: 1.2;
 }
@@ -113,13 +154,14 @@ body {
 }
 
 .section-nav a.active {
-  color: #155e75;
-  border-bottom-color: #0e7490;
+  color: var(--brand-navy);
+  border-bottom-color: var(--brand-teal);
 }
 
 .dashboard-page,
 .management-page {
-  max-width: 760px;
+  width: 100%;
+  max-width: none;
 }
 
 .page-heading {
@@ -133,7 +175,7 @@ body {
 
 .eyebrow {
   margin: 0 0 6px;
-  color: #0e7490;
+  color: var(--brand-navy);
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -159,8 +201,8 @@ body {
 }
 
 .dashboard-option:hover {
-  border-color: #0e7490;
-  background: #f0fdfa;
+  border-color: var(--brand-teal);
+  background: var(--brand-teal-soft);
 }
 
 .dashboard-option-icon {
@@ -169,8 +211,8 @@ body {
   width: 42px;
   height: 42px;
   border-radius: 8px;
-  background: #e0f2f1;
-  color: #0f766e;
+  background: var(--brand-teal-soft);
+  color: var(--brand-navy);
   font-size: 1.35rem;
 }
 
@@ -185,14 +227,14 @@ body {
 }
 
 .dashboard-option-arrow {
-  color: #0e7490;
+  color: var(--brand-teal-hover);
   font-size: 1.3rem;
 }
 
 .back-link {
   display: inline-block;
   margin-bottom: 8px;
-  color: #0e7490;
+  color: var(--brand-navy);
   text-decoration: none;
 }
 
@@ -212,12 +254,19 @@ body {
   margin-bottom: 12px;
 }
 
+.users-table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .users-table-heading h3 {
   margin: 0;
   font-size: 1.1rem;
 }
 
-.users-table-heading button {
+.users-table-actions button {
   padding: 8px 12px;
 }
 
@@ -241,8 +290,8 @@ body {
 }
 
 .users-table th {
-  background: #f6f8fa;
-  color: #536171;
+  background: var(--brand-navy-soft);
+  color: var(--brand-navy);
   font-size: 0.82rem;
   font-weight: 700;
 }
@@ -267,13 +316,13 @@ body {
 }
 
 .user-status.is-active {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--brand-teal-soft);
+  color: var(--brand-navy);
 }
 
 .user-status.is-inactive {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--brand-navy-soft);
+  color: var(--text-muted);
 }
 
 .users-load-error {
@@ -405,7 +454,7 @@ label select {
   border-radius: 10px;
   margin-top: 8px;
   background: #ffffff;
-  color: #1f2937;
+  color: var(--brand-navy);
 }
 
 .radio-group {
@@ -440,15 +489,27 @@ label select {
 button {
   appearance: none;
   border: none;
-  background: #2563eb;
-  color: white;
+  background: var(--brand-teal);
+  color: var(--brand-navy);
   padding: 12px 18px;
   border-radius: 12px;
   cursor: pointer;
 }
 
 button:hover {
-  background: #1d4ed8;
+  background: var(--brand-teal-hover);
+  color: #ffffff;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--brand-navy);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  background: #a9d9d6;
+  color: #435c70;
+  cursor: not-allowed;
 }
 
 .error-message {
@@ -550,7 +611,8 @@ button:hover {
 }
 
 button.secondary-action {
-  background: #64748b;
+  background: var(--brand-navy);
+  color: #ffffff;
   margin-left: 8px;
 }
 
@@ -565,6 +627,21 @@ button.secondary-action {
 
   .app-toolbar header h1 {
     font-size: 1.2rem;
+  }
+
+  .account-name {
+    max-width: 150px;
+    font-size: 0.78rem;
+  }
+
+  .brand-link header {
+    gap: 10px;
+  }
+
+  .brand-header img {
+    flex-basis: 42px;
+    width: 42px;
+    height: 42px;
   }
 
   .section-nav {
@@ -584,7 +661,7 @@ button.secondary-action {
 }
 
 button.secondary-action:hover {
-  background: #475569;
+  background: var(--brand-navy-hover);
 }
 
 .modal-overlay {
@@ -635,8 +712,8 @@ button.secondary-action:hover {
 
 .modal-content label input[type="number"]:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--brand-teal-hover);
+  box-shadow: 0 0 0 3px rgba(53, 183, 178, 0.2);
 }
 
 .modal-error {
@@ -663,19 +740,20 @@ button.secondary-action:hover {
 }
 
 .modal-actions button.primary {
-  background: #2563eb;
-  color: white;
+  background: var(--brand-teal);
+  color: var(--brand-navy);
 }
 
 .modal-actions button.primary:hover {
-  background: #1d4ed8;
+  background: var(--brand-teal-hover);
+  color: #ffffff;
 }
 
 .modal-actions button.secondary {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--brand-navy-soft);
+  color: var(--brand-navy);
 }
 
 .modal-actions button.secondary:hover {
-  background: #e5e7eb;
+  background: #d6e2ea;
 }

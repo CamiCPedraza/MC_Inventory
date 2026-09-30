@@ -1,12 +1,10 @@
-import { useMemo } from "react";
+import quantoLogo from "../assets/Quantto_logo.jpeg";
 
-function Header({ itemCount }) {
-  const displayCount = useMemo(() => itemCount, [itemCount]);
-
+function Header() {
   return (
-    <header>
+    <header className="brand-header">
+      <img src={quantoLogo} alt="Logo de Comercializadora Quantto" />
       <h1>Comercializadora Quantto | Sistema de inventario</h1>
-      <p>{displayCount} items registrados</p>
     </header>
   );
 }
