@@ -1,18 +1,37 @@
-function ItemListItem({ item, onGenerateQr, onGenerateBarcode, onUpdateStock, readOnly }) {
+import { useState } from "react";
+import BarcodeDisplay from "./BarcodeDisplay";
+
+function ItemListItem({ item, onGenerateBarcode, onUpdateStock, readOnly }) {
+  const [barcodeInfo, setBarcodeInfo] = useState(null);
+  const [isGeneratingBarcode, setIsGeneratingBarcode] = useState(false);
+
+  const handleGenerateBarcode = async () => {
+    setIsGeneratingBarcode(true);
+    setBarcodeInfo(null);
+    try {
+      setBarcodeInfo(await onGenerateBarcode(item.id));
+    } catch (error) {
+      // The inventory page displays errors from the shared items hook.
+    } finally {
+      setIsGeneratingBarcode(false);
+    }
+  };
+
   return (
-    <li key={item.id}>
-      <div>
-        <strong>{item.name}</strong>
-        <span>SKU: {item.sku}</span>
-        <span>Stock: {item.stock}</span>
+    <li>
+      <div className="item-list-content">
+        <div className="item-list-details">
+          <strong>{item.sku}</strong>
+          <span>Descripción: {item.name}</span>
+          <span>Cantidad (metros): {item.stock}</span>
+          <span>Bodega: {item.bodega}</span>
+        </div>
+        <BarcodeDisplay barcodeInfo={barcodeInfo} inline />
       </div>
       {!readOnly && (
-        <>
-          <button onClick={() => onGenerateQr(item.id)}>
-            Generar QR
-          </button>
-          <button onClick={() => onGenerateBarcode(item.id)}>
-            Generar código de barras
+        <div className="item-list-actions">
+          <button onClick={handleGenerateBarcode} disabled={isGeneratingBarcode}>
+            {isGeneratingBarcode ? "Generando..." : "Generar código de barras"}
           </button>
           <button
             onClick={() => onUpdateStock(item.id)}
@@ -20,7 +39,7 @@ function ItemListItem({ item, onGenerateQr, onGenerateBarcode, onUpdateStock, re
           >
             Actualizar stock
           </button>
-        </>
+        </div>
       )}
     </li>
   );

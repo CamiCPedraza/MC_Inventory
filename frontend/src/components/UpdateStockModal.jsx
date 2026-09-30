@@ -8,7 +8,7 @@ function UpdateStockModal({ isOpen, itemName, currentStock, onConfirm, onCancel 
     setError("");
     const newStock = Number(inputValue);
     if (Number.isNaN(newStock) || newStock < 0) {
-      setError("Stock debe ser un número válido y mayor o igual a 0");
+      setError("Cantidad (metros) debe ser un número válido y mayor o igual a 0");
       return;
     }
     onConfirm(newStock);
@@ -31,12 +31,12 @@ function UpdateStockModal({ isOpen, itemName, currentStock, onConfirm, onCancel 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Actualizar stock</h2>
+        <h2>Actualizar cantidad</h2>
         <p>Item: <strong>{itemName}</strong></p>
-        <p>Stock actual: <strong>{currentStock}</strong></p>
+        <p>Cantidad actual: <strong>{currentStock}</strong></p>
 
         <label>
-          Nuevo stock:
+          Nueva cantidad (metros):
           <input
             type="number"
             value={inputValue}

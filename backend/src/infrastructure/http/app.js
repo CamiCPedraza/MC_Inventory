@@ -112,12 +112,14 @@ app.get("/inventory/items/:id/qr/view", (req, res) => {
       <dl>
         <dt>ID</dt>
         <dd>${item.id}</dd>
-        <dt>Nombre</dt>
+        <dt>Descripción</dt>
         <dd>${item.name}</dd>
-        <dt>SKU</dt>
+        <dt>Producto</dt>
         <dd>${item.sku}</dd>
-        <dt>Stock</dt>
+        <dt>Cantidad m</dt>
         <dd>${item.stock}</dd>
+        <dt>Bodega</dt>
+        <dd>${item.bodega}</dd>
       </dl>
       <div class="footer">
         Escaneaste el código QR del item. Si ves esta pantalla en tu teléfono, el QR está funcionando correctamente.

@@ -11,12 +11,10 @@ import UserAdministrationPage from "./components/UserAdministrationPage";
 
 function App() {
   const navigate = useNavigate();
-  const { items, loading, error, loadItems, addItem, updateItemStock, generateQr, generateBarcode, setError } = useItems();
+  const { items, loading, error, loadItems, addItem, updateItemStock, generateBarcode, setError } = useItems();
   const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(getStoredToken()));
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
   const [authError, setAuthError] = useState("");
-  const [qrInfo, setQrInfo] = useState(null);
-  const [barcodeInfo, setBarcodeInfo] = useState(null);
   const [modalState, setModalState] = useState({
     isOpen: false,
     itemId: null,
@@ -61,25 +59,7 @@ function App() {
     return <EmptyInventoryScreen onLogout={handleLogout} />;
   }
 
-  const handleGenerateQr = async (itemId) => {
-    setQrInfo(null);
-    try {
-      const result = await generateQr(itemId);
-      setQrInfo(result);
-    } catch (err) {
-      // Error is handled in the hook
-    }
-  };
-
-  const handleGenerateBarcode = async (itemId) => {
-    setBarcodeInfo(null);
-    try {
-      const result = await generateBarcode(itemId);
-      setBarcodeInfo(result);
-    } catch (err) {
-      // Error is handled in the hook
-    }
-  };
+  const handleGenerateBarcode = (itemId) => generateBarcode(itemId);
 
   const handleUpdateStock = (itemId) => {
     const item = items.find((it) => it.id === itemId);
@@ -113,11 +93,8 @@ function App() {
       isObserver={isObserver}
       onItemCreated={addItem}
       onError={setError}
-      onGenerateQr={handleGenerateQr}
       onGenerateBarcode={handleGenerateBarcode}
       onUpdateStock={handleUpdateStock}
-      qrInfo={qrInfo}
-      barcodeInfo={barcodeInfo}
       modalState={modalState}
       onConfirmUpdate={handleConfirmUpdate}
       onCancelUpdate={handleCancelUpdate}

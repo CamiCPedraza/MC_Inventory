@@ -3,7 +3,7 @@ const InMemoryItemRepository = require("../src/infrastructure/repositories/InMem
 describe("InMemoryItemRepository", () => {
   it("should save and retrieve items", () => {
     const repository = new InMemoryItemRepository();
-    const item = { id: "42", name: "Caja", sku: "CAJ-001", stock: 5 };
+    const item = { id: "42", name: "Caja", sku: "CAJ-001", stock: 5, bodega: "Central" };
 
     repository.save(item);
     expect(repository.findById("42")).toBe(item);
@@ -17,7 +17,7 @@ describe("InMemoryItemRepository", () => {
 
   it("should update an existing item", () => {
     const repository = new InMemoryItemRepository();
-    const item = { id: "42", name: "Caja", sku: "CAJ-001", stock: 5 };
+    const item = { id: "42", name: "Caja", sku: "CAJ-001", stock: 5, bodega: "Central" };
     repository.save(item);
 
     const updated = repository.update("42", { stock: 8 });

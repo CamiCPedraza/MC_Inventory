@@ -43,7 +43,8 @@ describe("App UI", () => {
       id,
       name: "Tornillo",
       sku: "TOR-001",
-      stock: data.stock
+      stock: data.stock,
+      bodega: "Norte"
     }));
   });
 
@@ -68,7 +69,9 @@ describe("App UI", () => {
 
     fireEvent.click(screen.getByRole("link", { name: /Administrar inventario/i }));
     expect(await screen.findByRole("heading", { name: "Inventario" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Registrar item" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Agregar producto" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Agregar producto" }));
+    expect(await screen.findByRole("heading", { name: "Registrar item" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("link", { name: "Usuarios" }));
     expect(await screen.findByRole("heading", { name: "Usuarios" })).toBeInTheDocument();
@@ -97,12 +100,12 @@ describe("App UI", () => {
       JSON.stringify({ id: "2", username: "Bodega", role: "observer" })
     );
     vi.spyOn(api, "fetchItems").mockResolvedValue([
-      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
+      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5, bodega: "Norte" }
     ]);
 
     renderApp("/inventory");
 
-    await waitFor(() => expect(screen.getByText("Tornillo")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Descripción: Tornillo")).toBeInTheDocument());
 
     expect(screen.queryByText(/Registrar item/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Generar QR/i)).not.toBeInTheDocument();
@@ -123,52 +126,42 @@ describe("App UI", () => {
 
     await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
 
-    const itemForm = within(screen.getByRole("heading", { name: "Registrar item" }).closest("section"));
+    expect(screen.getByText(/No hay items registrados/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Agregar producto" }));
+    const dialog = await screen.findByRole("dialog");
+    const itemForm = within(dialog);
 
-    fireEvent.change(itemForm.getByLabelText("Nombre"), {
+    fireEvent.change(itemForm.getByLabelText("Descripción"), {
       target: { value: "Tornillo" }
     });
-    fireEvent.change(itemForm.getByLabelText("SKU"), {
+    fireEvent.change(itemForm.getByLabelText("Producto"), {
       target: { value: "TOR-001" }
     });
-    fireEvent.change(itemForm.getByLabelText("Stock"), {
+    fireEvent.change(itemForm.getByLabelText("Cantidad (metros)"), {
       target: { value: "5" }
     });
+    fireEvent.change(itemForm.getByLabelText("Bodega"), {
+      target: { value: "Norte" }
+    });
 
-    fireEvent.click(screen.getByText(/Crear item/i));
+    fireEvent.click(itemForm.getByRole("button", { name: "Crear item" }));
 
     await waitFor(() =>
       expect(api.createItem).toHaveBeenCalledWith({
         name: "Tornillo",
         sku: "TOR-001",
-        stock: 5
+        stock: 5,
+        bodega: "Norte"
       })
     );
 
-    expect(screen.getByText(/Tornillo/i)).toBeInTheDocument();
+    expect(await screen.findByText("Bodega: Norte")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("generates and displays QR code", async () => {
+  it("generates and displays barcode inside its product row", async () => {
     vi.spyOn(api, "fetchItems").mockResolvedValue([
-      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
-    ]);
-
-    renderApp("/inventory");
-
-    await waitFor(() => expect(api.fetchItems).toHaveBeenCalled());
-
-    const qrButtons = screen.getAllByText(/Generar QR/i);
-    fireEvent.click(qrButtons[0]);
-
-    await waitFor(() => expect(api.fetchItemQrCode).toHaveBeenCalledWith("1"));
-
-    expect(screen.getByAltText(/Código QR/i)).toBeInTheDocument();
-    expect(screen.getByText(/Abrir información/i)).toBeInTheDocument();
-  });
-
-  it("generates and displays barcode", async () => {
-    vi.spyOn(api, "fetchItems").mockResolvedValue([
-      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
+      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5, bodega: "Norte" }
     ]);
 
     renderApp("/inventory");
@@ -181,12 +174,14 @@ describe("App UI", () => {
     await waitFor(() => expect(api.fetchItemBarcode).toHaveBeenCalledWith("1"));
 
     expect(screen.getByAltText(/Código de barras/i)).toBeInTheDocument();
-    expect(screen.getByText(/Valor codificado \(SKU\): TOR-001/i)).toBeInTheDocument();
+    const productRow = screen.getByText("TOR-001", { selector: "strong" }).closest("li");
+    expect(productRow).toHaveTextContent("Producto codificado: TOR-001");
+    expect(screen.queryByText("Generar QR")).not.toBeInTheDocument();
   });
 
   it("updates item stock via modal", async () => {
     vi.spyOn(api, "fetchItems").mockResolvedValue([
-      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5 }
+      { id: "1", name: "Tornillo", sku: "TOR-001", stock: 5, bodega: "Norte" }
     ]);
 
     renderApp("/inventory");
@@ -211,6 +206,6 @@ describe("App UI", () => {
       expect(api.updateItem).toHaveBeenCalledWith("1", { stock: 15 })
     );
 
-    expect(screen.getByText(/Stock: 15/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cantidad \(metros\): 15/i)).toBeInTheDocument();
   });
 });

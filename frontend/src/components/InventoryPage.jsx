@@ -1,9 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import BarcodeDisplay from "./BarcodeDisplay";
 import ErrorAlert from "./ErrorAlert";
-import ItemForm from "./ItemForm";
+import ItemFormModal from "./ItemFormModal";
 import ItemList from "./ItemList";
-import QRDisplay from "./QRDisplay";
 import UpdateStockModal from "./UpdateStockModal";
 
 function InventoryPage({
@@ -13,15 +12,14 @@ function InventoryPage({
   isObserver,
   onItemCreated,
   onError,
-  onGenerateQr,
   onGenerateBarcode,
   onUpdateStock,
-  qrInfo,
-  barcodeInfo,
   modalState,
   onConfirmUpdate,
   onCancelUpdate
 }) {
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+
   return (
     <main className="management-page">
       {!isObserver && <Link className="back-link" to="/dashboard">← Volver al panel</Link>}
@@ -29,18 +27,27 @@ function InventoryPage({
         <p className="eyebrow">Administración</p>
         <h2>Inventario</h2>
       </div>
-      {!isObserver && <ItemForm onItemCreated={onItemCreated} onError={onError} />}
       <ErrorAlert message={error} />
+      {!isObserver && (
+        <div className="inventory-add-action">
+          <button type="button" onClick={() => setIsCreateOpen(true)}>Agregar producto</button>
+        </div>
+      )}
       <ItemList
         items={items}
         loading={loading}
-        onGenerateQr={onGenerateQr}
         onGenerateBarcode={onGenerateBarcode}
         onUpdateStock={onUpdateStock}
         readOnly={isObserver}
       />
-      <QRDisplay qrInfo={qrInfo} />
-      <BarcodeDisplay barcodeInfo={barcodeInfo} />
+      {!isObserver && isCreateOpen && (
+        <ItemFormModal
+          onItemCreated={onItemCreated}
+          onItemCreatedSuccessfully={() => setIsCreateOpen(false)}
+          onError={onError}
+          onCancel={() => setIsCreateOpen(false)}
+        />
+      )}
       {!isObserver && (
         <UpdateStockModal
           isOpen={modalState.isOpen}

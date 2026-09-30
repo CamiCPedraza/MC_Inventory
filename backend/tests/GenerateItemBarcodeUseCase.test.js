@@ -18,7 +18,7 @@ class TestBarcodeGenerator {
 
 describe("GenerateItemBarcodeUseCase", () => {
   it("should generate a barcode from the item SKU", async () => {
-    const item = { id: "1", name: "Tornillo", sku: "TOR-001", stock: 10 };
+    const item = { id: "1", name: "Tornillo", sku: "TOR-001", stock: 10, bodega: "Norte" };
     const repository = new TestRepository([item]);
     const barcodeGenerator = new TestBarcodeGenerator();
     const useCase = new GenerateItemBarcodeUseCase(repository, barcodeGenerator);
@@ -28,6 +28,7 @@ describe("GenerateItemBarcodeUseCase", () => {
     expect(result.item).toBe(item);
     expect(result.barcode).toMatch(/^data:image\/png;base64,/);
     expect(result.barcodeValue).toBe("TOR-001");
+    expect(result.item.bodega).toBe("Norte");
   });
 
   it("should throw when item does not exist", async () => {

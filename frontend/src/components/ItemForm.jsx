@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useItemForm } from "../hooks/useItemForm";
 
-function ItemForm({ onItemCreated, onError }) {
+function ItemForm({ onItemCreated, onItemCreatedSuccessfully, onError, onCancel }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { form, updateField, handleSubmit: formHandleSubmit } = useItemForm(
     async (data) => {
       setIsSubmitting(true);
       try {
-        await onItemCreated(data);
-      } catch (err) {
-        onError(err.message);
+        const item = await onItemCreated(data);
+        onItemCreatedSuccessfully?.(item);
       } finally {
         setIsSubmitting(false);
       }
@@ -29,21 +28,11 @@ function ItemForm({ onItemCreated, onError }) {
   };
 
   return (
-    <section className="form-card">
-      <h2>Registrar item</h2>
+    <section className="form-card item-form-card">
+      <h2 id="item-form-title">Registrar item</h2>
       <form onSubmit={handleSubmit}>
         <label>
-          Nombre
-          <input
-            type="text"
-            value={form.name}
-            onChange={handleChange("name")}
-            disabled={isSubmitting}
-          />
-        </label>
-
-        <label>
-          SKU
+          Producto
           <input
             type="text"
             value={form.sku}
@@ -53,7 +42,17 @@ function ItemForm({ onItemCreated, onError }) {
         </label>
 
         <label>
-          Stock
+          Descripción
+          <input
+            type="text"
+            value={form.name}
+            onChange={handleChange("name")}
+            disabled={isSubmitting}
+          />
+        </label>
+
+        <label>
+          Cantidad (metros)
           <input
             type="number"
             value={form.stock}
@@ -62,9 +61,30 @@ function ItemForm({ onItemCreated, onError }) {
           />
         </label>
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creando..." : "Crear item"}
-        </button>
+        <label>
+          Bodega
+          <input
+            type="text"
+            value={form.bodega}
+            onChange={handleChange("bodega")}
+            disabled={isSubmitting}
+          />
+        </label>
+
+        {onCancel ? (
+          <div className="modal-actions">
+            <button type="button" className="secondary" onClick={onCancel} disabled={isSubmitting}>
+              Cancelar
+            </button>
+            <button type="submit" className="primary" disabled={isSubmitting}>
+              {isSubmitting ? "Creando..." : "Crear item"}
+            </button>
+          </div>
+        ) : (
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creando..." : "Crear item"}
+          </button>
+        )}
       </form>
     </section>
   );
